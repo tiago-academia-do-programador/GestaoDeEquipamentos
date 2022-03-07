@@ -493,13 +493,7 @@ namespace GestaoDeEquipamentos.Correcao.ConsoleApp
 
             int idEquipamentoChamado = ValidarIdEquipamento();
 
-            string titulo;
-            do
-            {
-                Console.Write("Digite o titulo do chamado: ");
-                titulo = Console.ReadLine();
-
-            } while (titulo.Length < 5);
+            string titulo = ObterTituloChamado();
 
             Console.Write("Digite a descricao do chamado: ");
             string descricao = Console.ReadLine();
@@ -519,6 +513,7 @@ namespace GestaoDeEquipamentos.Correcao.ConsoleApp
             descricoesChamado[posicao] = descricao;
         }
 
+
         private static void EditarChamado()
         {
             MostrarCabecalho("Controle de Chamados", "Editando um chamado:");
@@ -526,7 +521,10 @@ namespace GestaoDeEquipamentos.Correcao.ConsoleApp
             int qtdChamadosCadastrados = VisualizarChamados();
 
             if (qtdChamadosCadastrados == 0)
+            {
+                ApresentarMensagem("Não há nenhum chamado disponível para edição!", ConsoleColor.DarkYellow);
                 return;
+            }
 
             Console.WriteLine();
 
@@ -556,7 +554,13 @@ namespace GestaoDeEquipamentos.Correcao.ConsoleApp
         {
             MostrarCabecalho("Controle de Chamados", "Excluindo um chamado:");
 
-            VisualizarChamados();
+            int qtdChamadosCadastrados = VisualizarChamados();
+
+            if (qtdChamadosCadastrados == 0)
+            {
+                ApresentarMensagem("Não há nenhum chamado disponível para excluir!", ConsoleColor.DarkYellow);
+                return;
+            }
 
             Console.WriteLine();
 
@@ -625,6 +629,18 @@ namespace GestaoDeEquipamentos.Correcao.ConsoleApp
             Console.ReadLine();
 
             return numeroChamadosRegistrados;
+        }
+
+        private static string ObterTituloChamado()
+        {
+            string titulo;
+            do
+            {
+                Console.Write("Digite o titulo do chamado: ");
+                titulo = Console.ReadLine();
+
+            } while (titulo.Length < 5);
+            return titulo;
         }
 
         private static int ValidarIdEquipamento()
