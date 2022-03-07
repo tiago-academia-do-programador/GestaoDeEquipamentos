@@ -109,8 +109,6 @@ namespace GestaoDeEquipamentos.Correcao.ConsoleApp
             IdEquipamento++;
 
             GravarEquipamento(0);
-
-            ApresentarMensagem("Equipamento cadastrado com sucesso", ConsoleColor.Green);
         }
 
         private static void GravarEquipamento(int idEquipamentoSelecionado)
@@ -140,6 +138,8 @@ namespace GestaoDeEquipamentos.Correcao.ConsoleApp
             numerosSerieEquipamento[posicao] = numeroSerie;
             datasFabricacaoEquipamento[posicao] = dataFabricacao;
             fabricantesEquipamento[posicao] = fabricante;
+
+            ApresentarMensagem("Equipamento cadastrado com sucesso", ConsoleColor.Green);
         }
 
         private static void EditarEquipamento()
@@ -477,8 +477,6 @@ namespace GestaoDeEquipamentos.Correcao.ConsoleApp
             IdChamado++;
 
             GravarChamado(0);
-
-            ApresentarMensagem("Chamado cadastrado com sucesso", ConsoleColor.Green);
         }
 
         private static void GravarChamado(int idChamadoSelecionado)
@@ -511,6 +509,8 @@ namespace GestaoDeEquipamentos.Correcao.ConsoleApp
             idsEquipamentoChamado[posicao] = idEquipamentoChamado;
             titulosChamado[posicao] = titulo;
             descricoesChamado[posicao] = descricao;
+
+            ApresentarMensagem("Chamado cadastrado com sucesso", ConsoleColor.Green);
         }
 
 
