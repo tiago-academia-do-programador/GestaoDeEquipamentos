@@ -20,6 +20,18 @@ namespace GestaoDeEquipamentos.Correcao.ConsoleApp
 
         #endregion
 
+        #region Variáveis de Chamados
+
+        static int[] idsChamado = new int[CAPACIDADE_REGISTROS];
+
+        static string[] titulosChamado = new string[CAPACIDADE_REGISTROS];
+        static string[] descricoesChamado = new string[CAPACIDADE_REGISTROS];
+        static int[] idsEquipamentoChamado = new int[CAPACIDADE_REGISTROS];
+
+        private static int IdChamado;
+
+        #endregion
+
         static void Main(string[] args)
         {
             while (true)
@@ -31,22 +43,41 @@ namespace GestaoDeEquipamentos.Correcao.ConsoleApp
 
                 if (opcao == "1")
                 {
-                    string opcaoCadastroEquipamentos = ApresentarMenuCadastroEquipamentos();
+                    string opcaoControleEquipamentos = ApresentarMenuCadastroEquipamentos();
 
-                    if (opcaoCadastroEquipamentos == "s")
+                    if (opcaoControleEquipamentos == "s")
                         break;
 
-                    else if (opcaoCadastroEquipamentos == "1")
+                    else if (opcaoControleEquipamentos == "1")
                         InserirNovoEquipamento();
 
-                    else if (opcaoCadastroEquipamentos == "2")
+                    else if (opcaoControleEquipamentos == "2")
                         VisualizarEquipamentos(true);
 
-                    else if (opcaoCadastroEquipamentos == "3")
+                    else if (opcaoControleEquipamentos == "3")
                         EditarEquipamento();
 
-                    else if (opcaoCadastroEquipamentos == "4")
+                    else if (opcaoControleEquipamentos == "4")
                         ExcluirEquipamento();
+                }
+                else if (opcao == "2")
+                {
+                    string opcaoControleChamados = ApresentarMenuControleChamados();
+
+                    if (opcaoControleChamados == "s")
+                        break;
+
+                    if (opcaoControleChamados == "1")
+                        InserirNovoChamado();
+
+                    else if (opcaoControleChamados == "2")
+                        VisualizarChamados();
+
+                    else if (opcaoControleChamados == "3")
+                        EditarChamado();
+
+                    else if (opcaoControleChamados == "4")
+                        ExcluirChamado();
                 }
             }
         }
@@ -416,6 +447,246 @@ namespace GestaoDeEquipamentos.Correcao.ConsoleApp
             return fabricante.Length == 0;
         }
         #endregion
+
+        #endregion
+
+        #region Cadastro de Chamados
+
+        private static string ApresentarMenuControleChamados()
+        {
+            Console.Clear();
+
+            Console.WriteLine("Controle de Chamados\n");
+
+            Console.WriteLine("Digite 1 para inserir novo chamado");
+            Console.WriteLine("Digite 2 para visualizar chamados");
+            Console.WriteLine("Digite 3 para editar um chamado");
+            Console.WriteLine("Digite 4 para excluir um chamado");
+
+            Console.WriteLine("Digite S para sair");
+
+            string opcao = Console.ReadLine();
+
+            return opcao;
+        }
+
+        private static void InserirNovoChamado()
+        {
+            MostrarCabecalho("Controle de Chamados", "Registrando um novo chamado:");
+
+            IdChamado++;
+
+            GravarChamado(0);
+
+            ApresentarMensagem("Chamado cadastrado com sucesso", ConsoleColor.Green);
+        }
+
+        private static void GravarChamado(int idChamadoSelecionado)
+        {
+            int qtdEquipamentos = VisualizarEquipamentos(false);
+
+            if (qtdEquipamentos == 0)
+            {
+                ApresentarMensagem("Não há nenhum equipamento cadastrado para abrir um chamado.", ConsoleColor.Yellow);
+                return;
+            }
+
+            int idEquipamentoChamado = ValidarIdEquipamento();
+
+            string titulo;
+            do
+            {
+                Console.Write("Digite o titulo do chamado: ");
+                titulo = Console.ReadLine();
+
+            } while (titulo.Length < 5);
+
+            Console.Write("Digite a descricao do chamado: ");
+            string descricao = Console.ReadLine();
+
+            int posicao;
+
+            if (idChamadoSelecionado == 0)
+            {
+                posicao = ObterPosicaoVagaParaChamados();
+                idsChamado[posicao] = IdChamado;
+            }
+            else
+                posicao = ObterPosicaoOcupadaParaChamados(idChamadoSelecionado);
+
+            idsEquipamentoChamado[posicao] = idEquipamentoChamado;
+            titulosChamado[posicao] = titulo;
+            descricoesChamado[posicao] = descricao;
+        }
+
+        private static void EditarChamado()
+        {
+            MostrarCabecalho("Controle de Chamados", "Editando um chamado:");
+
+            int qtdChamadosCadastrados = VisualizarChamados();
+
+            if (qtdChamadosCadastrados == 0)
+                return;
+
+            Console.WriteLine();
+
+            bool numeroEncontrado;
+            do
+            {
+                Console.Write("Digite o número do chamado que deseja editar: ");
+                int idSelecionado = Convert.ToInt32(Console.ReadLine());
+
+                numeroEncontrado = ExisteChamado(idSelecionado);
+
+                if (numeroEncontrado)
+                    GravarChamado(idSelecionado);
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                    Console.WriteLine("Número não encontrado, tente novamente");
+                    Console.ResetColor();
+                }
+
+            } while (numeroEncontrado == false);
+
+            ApresentarMensagem("Chamado editado com sucesso", ConsoleColor.Green);
+        }
+
+        private static void ExcluirChamado()
+        {
+            MostrarCabecalho("Controle de Chamados", "Excluindo um chamado:");
+
+            VisualizarChamados();
+
+            Console.WriteLine();
+
+            Console.Write("Digite o número do chamado que deseja excluir: ");
+            int idSelecionado = Convert.ToInt32(Console.ReadLine());
+
+            for (int i = 0; i < idsEquipamento.Length; i++)
+            {
+                if (idsChamado[i] == idSelecionado)
+                {
+                    idsChamado[i] = 0;
+                    idsEquipamentoChamado[i] = 0;
+                    titulosChamado[i] = null;
+                    descricoesChamado[i] = null;
+
+                    break;
+                }
+            }
+        }
+
+        private static int VisualizarChamados()
+        {
+            MostrarCabecalho("Controle de Chamados", "Visualizando chamados:");
+
+            Console.ForegroundColor = ConsoleColor.Red;
+
+            Console.WriteLine("{0,-10} | {1,-30} | {2,-55}", "Id", "Equipamento", "Título");
+
+            Console.WriteLine("-------------------------------------------------------------------------------------------------------------------");
+
+            Console.ResetColor();
+
+            int numeroChamadosRegistrados = 0;
+
+            for (int indiceChamados = 0; indiceChamados < idsChamado.Length; indiceChamados++)
+            {
+                if (idsChamado[indiceChamados] > 0)
+                {
+                    string nomeEquipamento = "";
+
+                    for (int indiceEquipamentos = 0; indiceEquipamentos < idsEquipamento.Length; indiceEquipamentos++)
+                    {
+                        if (idsEquipamento[indiceEquipamentos] == idsEquipamentoChamado[indiceChamados])
+                        {
+                            nomeEquipamento = nomesEquipamento[indiceEquipamentos];
+                            break;
+                        }
+                    }
+
+                    Console.Write("{0,-10} | {1,-30} | {2,-55}",
+                       idsChamado[indiceChamados],
+                       nomeEquipamento,
+                       titulosChamado[indiceChamados]);
+
+                    numeroChamadosRegistrados++;
+                }
+            }
+
+            if (numeroChamadosRegistrados == 0)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine("Nenhum chamado registrado!");
+                Console.ResetColor();
+            }
+
+            Console.ReadLine();
+
+            return numeroChamadosRegistrados;
+        }
+
+        private static int ValidarIdEquipamento()
+        {
+            int idEquipamentoChamado;
+            bool equipamentoExiste;
+            do
+            {
+                Console.Write("Digite o Id do equipamento para manutenção: ");
+                idEquipamentoChamado = Convert.ToInt32(Console.ReadLine());
+
+                equipamentoExiste = ExisteEquipamento(idEquipamentoChamado);
+
+                if (!equipamentoExiste)
+                    ApresentarMensagem("O equipamento com o Id informado não existe! Digite um Id válido.", ConsoleColor.Red);
+
+            } while (!equipamentoExiste);
+            return idEquipamentoChamado;
+        }
+
+        private static int ObterPosicaoVagaParaChamados()
+        {
+            int posicao = 0;
+
+            for (int i = 0; i < idsChamado.Length; i++)
+            {
+                if (idsChamado[i] == 0) //inserindo:
+                {
+                    posicao = i;
+                    break;
+                }
+            }
+
+            return posicao;
+        }
+
+        private static int ObterPosicaoOcupadaParaChamados(int idChamadoSelecionado)
+        {
+            int posicao = 0;
+
+            for (int i = 0; i < idsChamado.Length; i++)
+            {
+                if (idChamadoSelecionado == idsChamado[i]) //editando:
+                {
+                    posicao = i;
+                    break;
+                }
+            }
+
+            return posicao;
+        }
+
+        private static bool ExisteChamado(int idSelecionado)
+        {
+            for (int i = 0; i < idsChamado.Length; i++)
+            {
+                if (idsChamado[i] == idSelecionado)
+                    return true;
+            }
+
+            return false;
+        }
 
         #endregion
 
